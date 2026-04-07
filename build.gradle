@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+}
+
+group = 'finalproject.automation'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Cucumber + TestNG
+    testImplementation 'io.cucumber:cucumber-java:7.15.0'
+    testImplementation 'io.cucumber:cucumber-testng:7.15.0'
+    testImplementation 'org.testng:testng:7.9.0'
+
+    // Selenium (Web Automation)
+    implementation 'org.seleniumhq.selenium:selenium-java:4.18.1'
+    implementation 'io.github.bonigarcia:webdrivermanager:5.7.0'
+
+    // API Testing (RestAssured)
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
+    testImplementation 'org.json:json:20240205'
+
+    // Allure Report
+    testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.24.0'
+}
+
+tasks.withType(Test) {
+    useTestNG()
+    systemProperty "cucumber.publish.quiet", "true"
+    systemProperty "allure.results.directory", "$buildDir/allure-results"
+
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+        showStandardStreams = true
+        exceptionFormat = "full"
+    }
+}
+
+// TASK API TEST
+task apiTest(type: Test) {
+    group = "verification"
+    description = "Run all API tests"
+    useTestNG()
+    include '**/ApiTestRunner.class'
+}
+
+// TASK WEB TEST
+task webTest(type: Test) {
+    group = "verification"
+    description = "Run all Web tests"
+    useTestNG()
+    include '**/WebTestRunner.class'
+}
+
+// Source directory config
+sourceSets {
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
