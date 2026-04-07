@@ -8,9 +8,10 @@ import io.cucumber.testng.CucumberOptions;
         glue = "finalproject.automation.steps.web",
         plugin = {
                 "pretty",
-                "html:build/reports/web-cucumber.html",
-                "json:build/reports/web-cucumber.json"
+                "html:build/reports/cucumber/web-html",
+                "json:build/reports/cucumber/web.json"
         },
         tags = "@web"
 )
-public class WebTestRunner extends AbstractTestNGCucumberTests {}
+public class WebTestRunner extends AbstractTestNGCucumberTests {
+}

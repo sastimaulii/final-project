@@ -4,13 +4,14 @@ import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
 
 @CucumberOptions(
-        features = "src/test/resources/features/api",
-        glue = "finalproject.automation.steps.api",
+        features = "src/test/resources/features/api",          // lokasi feature file API
+        glue = "finalproject.automation.steps.api",           // package step definitions API
         plugin = {
-                "pretty",
-                "html:build/reports/api-cucumber.html",
-                "json:build/reports/api-cucumber.json"
+                "pretty",                                         // output di console
+                "html:build/reports/cucumber/api-html",          // report HTML
+                "json:build/reports/cucumber/api.json"           // report JSON
         },
-        tags = "@api"
+        tags = "@api"                                         // hanya jalankan scenario dengan tag @api
 )
-public class ApiTestRunner extends AbstractTestNGCucumberTests {}
+public class ApiTestRunner extends AbstractTestNGCucumberTests {
+}
