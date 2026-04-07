@@ -15,19 +15,65 @@ dependencies {
     testImplementation 'io.cucumber:cucumber-testng:7.15.0'
     testImplementation 'org.testng:testng:7.9.0'
 
-    // Selenium (Web UI)
+    // Selenium
     implementation 'org.seleniumhq.selenium:selenium-java:4.18.1'
     implementation 'io.github.bonigarcia:webdrivermanager:5.7.0'
 
-    // RestAssured (API)
+    // API Testing
     testImplementation 'io.rest-assured:rest-assured:5.4.0'
     testImplementation 'org.json:json:20240205'
 
-    // Allure Cucumber report
+    // Allure
     testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.24.0'
 }
 
-// SourceSets configuration
+tasks.withType(Test) {
+    useTestNG()
+
+    // Disable Cucumber publish
+    systemProperty "cucumber.publish.quiet", "true"
+
+    // Folder hasil Allure
+    systemProperty "allure.results.directory", "$buildDir/allure-results"
+
+    // Logging untuk debugging
+    testLogging {
+        events "started", "passed", "skipped", "failed"
+        showStandardStreams = true
+        exceptionFormat = "full"
+    }
+}
+
+test {
+    useTestNG()
+}
+
+// API Test
+task apiTest(type: Test) {
+    description = "Run API Automation Tests"
+    group = "verification"
+
+    filter {
+        includeTestsMatching "finalproject.automation.runners.ApiTestRunner"
+    }
+
+    useTestNG()
+    systemProperty "cucumber.options", "--tags @api"
+}
+
+// Web Test
+task webTest(type: Test) {
+    description = "Run Web Automation Tests"
+    group = "verification"
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useTestNG()
+    systemProperty "cucumber.options", "--tags @web"
+}
+
+// Source set
 sourceSets {
     test {
         java {
@@ -36,65 +82,5 @@ sourceSets {
         resources {
             srcDirs = ['src/test/resources']
         }
-    }
-}
-
-// Default Test task
-tasks.withType(Test) {
-    useTestNG()
-
-    // Logging & debugging
-    testLogging {
-        events "started", "passed", "skipped", "failed"
-        showStandardStreams = true
-        exceptionFormat = "full"
-    }
-
-    // Fail-safe: kalau tidak ada test yang ditemukan, jangan error
-    failOnNoDiscoveredTests = false
-
-    // Allure result folder
-    systemProperty "allure.results.directory", "$buildDir/allure-results"
-    systemProperty "cucumber.publish.quiet", "true"
-}
-
-// Gradle task khusus untuk Web automation
-task webTest(type: Test) {
-    description = "Run all Web UI Automation Tests (@web)"
-    group = "verification"
-
-    useTestNG()
-
-    // Jalankan runner khusus
-    filter {
-        includeTestsMatching "finalproject.automation.runners.WebTestRunner"
-    }
-
-    systemProperty "allure.results.directory", "$buildDir/allure-results/web"
-    systemProperty "cucumber.publish.quiet", "true"
-
-    testLogging {
-        events "started", "passed", "skipped", "failed"
-        showStandardStreams = true
-    }
-}
-
-// Gradle task khusus untuk API automation
-task apiTest(type: Test) {
-    description = "Run all API Automation Tests (@api)"
-    group = "verification"
-
-    useTestNG()
-
-    filter {
-        includeTestsMatching "finalproject.automation.runners.ApiTestRunner"
-    }
-
-    systemProperty "allure.results.directory", "$buildDir/allure-results/api"
-    systemProperty "cucumber.publish.quiet", "true"
-
-    testLogging {
-        events "started", "passed", "skipped", "failed"
-        showStandardStreams = true
     }
 }
